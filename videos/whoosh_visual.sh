@@ -5,7 +5,7 @@
 set -euo pipefail
 in="$1"; out="$2"; A="$3"; B="$4"
 M=$(python3 -c "print(($A+$B)/2)"); MD=$(python3 -c "print(($B-$A)/2)")
-WH="$HOME/.claude/skills/ghost-editor/library/sfx/whoosh-2.wav"
+WH="$(cd "$(dirname "$0")/.." && pwd)/.claude/skills/ghost-editor/library/sfx/whoosh-2.wav"
 Z="1+0.10*max(0\,1-abs(t-$M)/$MD)"
 DL=$(python3 -c "print(int(($A-0.05)*1000))")
 ffmpeg -v error -y -i "$in" -i "$WH" -filter_complex "

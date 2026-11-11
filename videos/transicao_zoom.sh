@@ -4,7 +4,7 @@
 # Não muda a duração nem a sincronia com a voz.  Uso: bash transicao_zoom.sh entrada.mp4 saida.mp4 <segundo_do_corte>
 set -euo pipefail
 in="$1"; out="$2"; T="$3"; D=0.15
-WH="$HOME/.claude/skills/ghost-editor/library/sfx/whoosh-2.wav"
+WH="$(cd "$(dirname "$0")/.." && pwd)/.claude/skills/ghost-editor/library/sfx/whoosh-2.wav"
 Z="1+0.28*max(0\,1-abs(t-$T)/$D)"
 ffmpeg -v error -y -i "$in" -i "$WH" -filter_complex "
 [0:v]scale=w='trunc(iw*($Z)/2)*2':h='trunc(ih*($Z)/2)*2':eval=frame,crop=1080:1920,

@@ -124,7 +124,7 @@ codigo, video = a.codigo.upper(), a.video
 if not a.palavras:
     a.palavras = str((RAIZ / video).with_suffix(".words.json"))
     if not Path(a.palavras).exists():
-        subprocess.run(["python3", str(Path.home() / ".claude/skills/ghost-editor/scripts/transcribe.py"), str(RAIZ / video),
+        subprocess.run(["python3", str(Path(__file__).resolve().parents[2] / ".claude/skills/ghost-editor/scripts/transcribe.py"), str(RAIZ / video),
                         "--out", a.palavras, "--lang", "pt"], check=True)
 titulo, ganchos, blocos, finais = roteiro(codigo)
 itens = [("gancho", h, t) for h, t in ganchos] + [(bid, nome, t) for bid, nome, t in blocos] + [("final", f, t) for f, t in finais]

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sala-revisao",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["videos/revisao/servidor.py"],
+      "port": 8797
+    }
+  ]
+}

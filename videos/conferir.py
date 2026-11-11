@@ -22,7 +22,7 @@ Sai com código 1 se reprovar.
 import json, re, subprocess, sys
 from pathlib import Path
 
-MODELO = Path.home() / ".claude/skills/ghost-editor/library/models/face_detection_yunet_2023mar.onnx"
+MODELO = Path(__file__).resolve().parents[1] / ".claude/skills/ghost-editor/library/models/face_detection_yunet_2023mar.onnx"
 W, H = 1080, 1920
 FPS = 5                      # amostras por segundo
 JANELA = 2.0                 # um quadro da folha / uma janela de olhos a cada 2 s

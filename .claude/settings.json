@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(ffmpeg:*)",
+      "Bash(ffprobe:*)",
+      "Bash(whisper:*)",
+      "Bash(python3 videos/:*)",
+      "Bash(python3 .claude/skills/:*)",
+      "Bash(python3 build.py:*)",
+      "Bash(python3 recortar.py:*)",
+      "Bash(python3 apertar_pausas.py:*)",
+      "Bash(bash videos/:*)",
+      "Bash(bash .claude/skills/:*)",
+      "Bash(node .claude/skills/:*)",
+      "Bash(node area_segura_dom.mjs:*)",
+      "Bash(node videos/:*)",
+      "Bash(npx hyperframes:*)",
+      "Bash(./node_modules/.bin/hyperframes:*)"
+    ],
+    "deny": [
+      "Read(.claude/skills/ghost-editor/.env)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/sessao.sh\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guarda-fonte.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -11,7 +11,15 @@ import re, subprocess, sys, glob, os
 from pathlib import Path
 
 P = Path(sys.argv[1]); OUT = Path(sys.argv[2])
-HF = glob.glob(os.path.expanduser("~/.npm/_npx/*/node_modules/.bin/hyperframes"))[0]
+REPO = Path(__file__).resolve().parents[2]
+def _hyperframes():
+    import glob as _g, os as _o
+    p = REPO / "node_modules/.bin/hyperframes"
+    if p.exists(): return str(p)
+    g = sorted(_g.glob(_o.path.expanduser("~/.npm/_npx/*/node_modules/.bin/hyperframes")))
+    if g: return g[-1]
+    raise SystemExit("hyperframes não encontrado: rode ./setup.sh na raiz do kit")
+HF = _hyperframes()
 doc = (P / "index.html").read_text()
 
 janelas = [(float(a), float(a) + float(d)) for a, d in

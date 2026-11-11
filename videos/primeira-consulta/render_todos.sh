@@ -2,8 +2,8 @@
 # Refaz as 3 versões (caixa, animado, pop) x (anúncio, orgânico) a partir da fonte SDR convertida pelo macOS.
 set -e
 B="$(cd "$(dirname "$0")" && pwd)"
-S=~/.claude/skills/ghost-editor
-HF=$(ls -d ~/.npm/_npx/*/node_modules/.bin/hyperframes | head -1)
+KIT="$(cd "$B/../.." && pwd)"; S="$KIT/.claude/skills/ghost-editor"
+HF="$KIT/node_modules/.bin/hyperframes"; [ -x "$HF" ] || HF=$(ls ~/.npm/_npx/*/node_modules/.bin/hyperframes 2>/dev/null | tail -1)
 Q="Tenho medo de sair do dentista com um orçamento enorme. Como é a 1ª consulta?"
 bash $S/scripts/prep.sh $B/fonte/IMG_5263-sdr.mov $B/take-5263 >/dev/null 2>&1
 cp $B/take-5263/assets/talk.mp4 $B/take-5263-animado/assets/talk.mp4

@@ -9,12 +9,21 @@ import path from "path";
 import os from "os";
 
 const require = createRequire(import.meta.url);
-const PUP = process.env.PUPPETEER_DIR || `${process.env.HOME}/.npm/_npx/4b4c857f6efdfb61/node_modules/puppeteer`;
+// sobe a partir do script até achar node_modules/puppeteer (o molde é copiado para dentro de projetos)
+const subir = d => { const p = path.join(d, "node_modules/puppeteer"); if (require("fs").existsSync(p)) return p;
+  const pai = path.dirname(d); return pai === d ? null : subir(pai); };
+const PUP = process.env.PUPPETEER_DIR || subir(path.dirname(new URL(import.meta.url).pathname));
+if (!PUP) { console.error("puppeteer não achado: rode ./setup.sh na raiz do kit"); process.exit(2); };
 const puppeteer = require(PUP);
 const html = path.resolve(process.argv[2] || "index.html");
 
 // o mesmo chrome-headless-shell que o HyperFrames usa no render (~/.cache/hyperframes/chrome)
-const EXE = process.env.CHROME_EXE || os.homedir() + "/.cache/hyperframes/chrome/chrome-headless-shell/mac_arm-152.0.7977.30/chrome-headless-shell-mac-arm64/chrome-headless-shell";
+const CH = path.join(os.homedir(), ".cache/hyperframes/chrome/chrome-headless-shell");
+const fs = require("fs");
+const achar = d => { for (const n of fs.existsSync(d) ? fs.readdirSync(d).sort().reverse() : []) { const p = path.join(d, n);
+  if (fs.statSync(p).isDirectory()) { const r = achar(p); if (r) return r; } else if (n === "chrome-headless-shell") return p; } };
+const EXE = process.env.CHROME_EXE || achar(CH);
+if (!EXE) { console.error("chrome-headless-shell do HyperFrames não achado: rode ./setup.sh"); process.exit(2); };
 const browser = await puppeteer.launch({ executablePath: EXE, headless: "shell", args: ["--allow-file-access-from-files"] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1080, height: 1920 });

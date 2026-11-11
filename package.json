@@ -1,0 +1,9 @@
+{
+  "name": "kit-edicao-video",
+  "private": true,
+  "description": "Dependências Node do kit: render (HyperFrames) e verificador de área segura (puppeteer)",
+  "dependencies": {
+    "hyperframes": "0.9.29",
+    "puppeteer": "25.8.0"
+  }
+}

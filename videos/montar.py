@@ -11,8 +11,16 @@ from pathlib import Path
 
 P = Path(sys.argv[1]); nome = sys.argv[2]; pergunta = sys.argv[3]; sai = sys.argv[4]
 V = Path(__file__).resolve().parent
-HF = glob.glob(os.path.expanduser("~/.npm/_npx/*/node_modules/.bin/hyperframes"))[0]
-BUILD = os.path.expanduser("~/.claude/skills/ghost-editor/scripts/build.mjs")
+REPO = Path(__file__).resolve().parents[1]
+def _hyperframes():
+    import glob as _g, os as _o
+    p = REPO / "node_modules/.bin/hyperframes"
+    if p.exists(): return str(p)
+    g = sorted(_g.glob(_o.path.expanduser("~/.npm/_npx/*/node_modules/.bin/hyperframes")))
+    if g: return g[-1]
+    raise SystemExit("hyperframes não encontrado: rode ./setup.sh na raiz do kit")
+HF = _hyperframes()
+BUILD = str(REPO / ".claude/skills/ghost-editor/scripts/build.mjs")
 cfg = P / "reel.json"
 reprovados = []
 # 17/10: a história e os fatos nascem ANTES do primeiro quadro (cadeia de arquivos; ver
@@ -50,8 +58,10 @@ for v in os.environ.get("VARIANTES", "anuncio organico").split():   # 24/10: VAR
     # 15/10: só chega ao Antonio o que passa no conferir.py (enquadramento, legenda, volume)
     if subprocess.run(["python3", str(V / "conferir.py"), str(P), str(final)]).returncode != 0:
         reprovados.append(v); continue
-    shutil.copy(final, V / f"{nome}-{v}-{date.today().isoformat()}.mp4")
-    shutil.copy(final, Path.home() / f"Desktop/{nome}-{v}.mp4")
+    saida = P.parent / "saida"; saida.mkdir(exist_ok=True)   # regra: MP4 final em <projeto>/saida/
+    shutil.copy(final, saida / f"{nome}-{v}-{date.today().isoformat()}.mp4")
+    if os.environ.get("KIT_COPIA_DESKTOP"):
+        shutil.copy(final, Path.home() / f"Desktop/{nome}-{v}.mp4")
     print("ok", v)
 if reprovados:
     sys.exit(f"REPROVADO no conferir.py: {', '.join(reprovados)}. Nada foi copiado; ver {P / 'build/conferir.jpg'}")

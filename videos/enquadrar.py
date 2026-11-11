@@ -11,7 +11,8 @@ e regrava assets/talk.mp4 + build/face.json.
 import json, subprocess, sys
 from pathlib import Path
 
-S = Path.home() / ".claude/skills/ghost-editor/scripts"
+REPO = Path(__file__).resolve().parents[1]
+S = REPO / ".claude/skills/ghost-editor/scripts"
 orig, P = Path(sys.argv[1]), Path(sys.argv[2])
 Z = float(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] != "auto" else None
 # olhos: um valor para todas as cenas ou um por cena ("0.40,0.30": a 1ª tem caixinha no topo, a 2ª não)

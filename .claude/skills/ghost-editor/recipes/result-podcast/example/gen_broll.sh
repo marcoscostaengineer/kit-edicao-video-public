@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # AI B-roll stills (Gemini). Resumable: skips files that already exist.
-G=~/.claude/skills/ghost-editor/scripts/broll_gen.py
+G="$(cd "$(dirname "$0")/../../.." && pwd)/scripts/broll_gen.py"
 gen() { [ -f "assets/broll/$1.png" ] && return; python3 $G "$2" "assets/broll/$1.png" --aspect "$3" 2>&1 | tail -n 1; }
 gen crt "An old beige CRT computer monitor and keyboard on a wooden desk in a 2003 teenager's bedroom at night, a dial-up connection window on the screen, warm desk lamp, posters slightly out of focus, film photo, grain, no readable text, no logos" 4:5 &
 gen yard "Children riding bicycles in the courtyard of Soviet-era apartment blocks at dusk in the early 2000s, warm sunset light, swings and a sandbox, nostalgic 35mm film photograph, grain, no text" 4:5 &
