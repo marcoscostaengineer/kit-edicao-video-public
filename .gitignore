@@ -1,0 +1,22 @@
+# mídia nunca entra
+*.mov
+*.MOV
+*.mp4
+*.m4v
+*.mkv
+*.mxf
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.onnx
+build/
+fonte/
+saida/
+voice/
+# segredos e lixo
+.env
+__pycache__/
+.DS_Store
+node_modules/
+.venv*/

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sala de revisão</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161032'/%3E%3Crect x='14' y='18' width='36' height='28' rx='5' fill='none' stroke='%23b9a6ff' stroke-width='4'/%3E%3Cpath d='M28 25l10 7-10 7z' fill='%23b9a6ff'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --fundo:#0d0a1f; --painel:#151030; --painel2:#1c1640; --linha:#2c2459; --texto:#ece8ff; --fraco:#9a90c9;
+    --acento:#b9a6ff; --fica:#7ee0b0; --sai:#ff9a9a; --aviso:#ffd27a;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--fundo); color:var(--texto); font:14px/1.4 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .rot { font:600 10px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--fraco); }
+  header { display:flex; align-items:center; gap:16px; padding:12px 18px; border-bottom:1px solid var(--linha); background:var(--painel); position:sticky; top:0; z-index:5; }
+  header h1 { margin:0; font-size:15px; letter-spacing:.02em; }
+  #videos { display:flex; gap:6px; flex-wrap:wrap; }
+  .chip { border:1px solid var(--linha); background:var(--painel2); color:var(--texto); border-radius:999px; padding:5px 12px; cursor:pointer; font:600 12px var(--mono); }
+  .chip[aria-pressed=true] { border-color:var(--acento); box-shadow:0 0 0 1px var(--acento) inset; }
+  #salvo { margin-left:auto; font:12px var(--mono); color:var(--fraco); }
+  main { display:grid; grid-template-columns: minmax(280px, 360px) 1fr; gap:16px; padding:16px 18px 40px; }
+  @media (max-width: 900px) { main { grid-template-columns:1fr; } }
+  .painel { background:var(--painel); border:1px solid var(--linha); border-radius:14px; padding:14px; }
+  #lado { position:sticky; top:66px; align-self:start; }
+  video { width:100%; aspect-ratio:9/16; background:#000; border-radius:10px; display:block; }
+  #controles { display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; }
+  button { font:inherit; }
+  .btn { border:1px solid var(--linha); background:var(--painel2); color:var(--texto); border-radius:8px; padding:6px 10px; cursor:pointer; }
+  .btn:hover { border-color:var(--acento); }
+  .btn.on { border-color:var(--acento); color:var(--acento); }
+  #info h2 { margin:6px 0 4px; font-size:16px; }
+  .fala { margin:6px 0; padding:8px 10px; background:var(--painel2); border-radius:8px; }
+  .fala b { display:block; margin-bottom:2px; }
+  .nota { color:var(--aviso); font-size:13px; margin-top:6px; }
+  #cab h2 { margin:2px 0 4px; font-size:20px; }
+  #cab .meta { color:var(--fraco); font-size:13px; }
+  #resumo { display:flex; gap:14px; margin-top:10px; flex-wrap:wrap; }
+  .num { font:700 20px var(--mono); }
+  .faixa { margin-top:14px; }
+  .faixa-cab { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; }
+  .faixa-cab h3 { margin:0; font-size:14px; }
+  .faixa-cab .regra { color:var(--fraco); font-size:12px; }
+  .faixa-cab .cont { margin-left:auto; font:12px var(--mono); color:var(--fraco); }
+  .trilho { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; }
+  .card { flex:0 0 200px; background:var(--painel2); border:1px solid var(--linha); border-radius:12px; padding:8px; cursor:pointer; }
+  .card.atual { border-color:var(--acento); box-shadow:0 0 0 1px var(--acento) inset; }
+  .card.fica { border-left:4px solid var(--fica); }
+  .card.sai { opacity:.55; border-left:4px dashed var(--sai); }
+  .card img { width:100%; aspect-ratio:9/16; object-fit:cover; border-radius:8px; display:block; background:#000; max-height:240px; }
+  .card .t { font-weight:600; margin:6px 0 2px; font-size:13px; }
+  .card .d { font:11px var(--mono); color:var(--fraco); }
+  .card .estado { font:700 11px var(--mono); margin-top:4px; }
+  .estado.fica { color:var(--fica); } .estado.sai { color:var(--sai); } .estado.nada { color:var(--fraco); }
+  .acoes { display:flex; gap:6px; margin-top:6px; }
+  .acoes .btn { flex:1; padding:5px 0; font-size:12px; }
+  .acoes .btn.fica.on { border-color:var(--fica); color:var(--fica); }
+  .acoes .btn.sai.on { border-color:var(--sai); color:var(--sai); }
+  textarea { width:100%; margin-top:6px; background:#0f0b26; color:var(--texto); border:1px solid var(--linha); border-radius:8px; padding:6px 8px; font:12px/1.35 inherit; resize:vertical; min-height:34px; }
+  textarea:focus { outline:none; border-color:var(--acento); }
+  .pendente { border:1px dashed var(--linha); border-radius:12px; padding:12px; color:var(--fraco); }
+  .pendente q { color:var(--texto); }
+  #atalhos { color:var(--fraco); font:11px var(--mono); margin-top:8px; }
+  .vazio { color:var(--fraco); padding:40px; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sala de revisão</h1>
+  <div id="videos" role="group" aria-label="Vídeos"></div>
+  <span id="salvo">—</span>
+</header>
+<main>
+  <aside id="lado" class="painel">
+    <video id="player" playsinline preload="metadata"></video>
+    <div id="controles">
+      <button class="btn" id="tocar">▶ Tocar trecho</button>
+      <button class="btn" id="loop" aria-pressed="false">↻ Repetir</button>
+      <button class="btn" id="som">🔊 Som</button>
+    </div>
+    <div id="info"><p class="rot">Clique numa opção da timeline</p></div>
+    <div id="atalhos">Espaço tocar · F fica · S sai · ← → opção · ↑ ↓ faixa</div>
+  </aside>
+  <section>
+    <div id="cab" class="painel"></div>
+    <div id="timeline"></div>
+    <div class="painel faixa">
+      <div class="faixa-cab"><h3>Observações gerais do vídeo</h3><span class="regra">o que vale para a montagem inteira</span></div>
+      <textarea id="notas" rows="3" placeholder="Ex.: usar H2 tomada 3 no anúncio e H1 no Reels; legenda maior; tirar a faixa escura de baixo…"></textarea>
+    </div>
+  </section>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+let projeto = { videos: [] }, decisoes = {}, vid = null, atual = null, salvarTimer = null;
+const player = $("#player");
+
+const fmt = (s) => { const m = Math.floor(s / 60), r = (s - m * 60).toFixed(1).padStart(4, "0"); return `${m}:${r}`; };
+const dv = () => (decisoes[vid.id] ??= { faixas: {}, notas: "" });
+const df = (fid) => (dv().faixas[fid] ??= { opcoes: {} });
+const dop = (fid, oid) => (df(fid).opcoes[oid] ??= { estado: "", ajuste: "" });
+
+async function carregar() {
+  projeto = await (await fetch("/api/projeto")).json();
+  decisoes = await (await fetch("/api/decisoes")).json();
+  const ul = $("#videos"); ul.innerHTML = "";
+  if (!projeto.videos.length) { $("#timeline").innerHTML = '<div class="vazio">Nenhum vídeo recortado ainda.</div>'; return; }
+  projeto.videos.forEach((v) => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = v.id; b.title = v.titulo;
+    b.onclick = () => abrir(v.id); ul.appendChild(b);
+  });
+  const ultimo = localStorage.getItem("revisao.video");
+  abrir(projeto.videos.find((v) => v.id === ultimo) ? ultimo : projeto.videos[0].id);
+}
+
+function abrir(id) {
+  vid = projeto.videos.find((v) => v.id === id); try { localStorage.setItem("revisao.video", id); } catch (e) {}
+  document.querySelectorAll("#videos .chip").forEach((c) => c.setAttribute("aria-pressed", c.textContent === id));
+  $("#notas").value = dv().notas || "";
+  desenhar();
+  const primeira = vid.faixas.find((f) => f.opcoes.length);
+  if (primeira) selecionar(primeira.id, primeira.opcoes[0].id, false);
+}
+
+function contar() {
+  let total = 0, fica = 0, sai = 0, ajustes = 0, pend = 0;
+  vid.faixas.forEach((f) => {
+    if (f.pendente) pend++;
+    f.opcoes.forEach((o) => { total++; const d = dv().faixas[f.id]?.opcoes?.[o.id];
+      if (d?.estado === "fica") fica++; if (d?.estado === "sai") sai++; if (d?.ajuste) ajustes++; });
+  });
+  return { total, fica, sai, ajustes, pend, aberto: total - fica - sai };
+}
+
+function desenhar() {
+  const c = contar();
+  $("#cab").innerHTML = `<span class="rot">${vid.id} · roteiro: ${vid.roteiro}</span><h2>${vid.titulo}</h2>
+    <div class="meta">${vid.status || ""}</div>
+    <div id="resumo">
+      <div><div class="rot">Opções</div><div class="num">${c.total}</div></div>
+      <div><div class="rot">✔ Fica</div><div class="num">${c.fica}</div></div>
+      <div><div class="rot">✕ Sai</div><div class="num">${c.sai}</div></div>
+      <div><div class="rot">○ A decidir</div><div class="num">${c.aberto}</div></div>
+      <div><div class="rot">✎ Com ajuste</div><div class="num">${c.ajustes}</div></div>
+      <div><div class="rot">⧗ Faixas sem gravação</div><div class="num">${c.pend}</div></div>
+    </div>`;
+  const tl = $("#timeline"); tl.innerHTML = "";
+  vid.faixas.forEach((f) => {
+    const box = document.createElement("div"); box.className = "painel faixa";
+    const n = f.opcoes.length, fic = f.opcoes.filter((o) => dv().faixas[f.id]?.opcoes?.[o.id]?.estado === "fica").length;
+    box.innerHTML = `<div class="faixa-cab"><h3>${f.nome}</h3><span class="regra">${f.escolha ? "escolha: " + f.escolha : ""}</span>
+      <span class="cont">${f.pendente ? "⧗ aguardando gravação" : `${fic} de ${n} ✔`}</span></div>`;
+    if (f.pendente || !n) {
+      box.insertAdjacentHTML("beforeend", `<div class="pendente">Ainda não recortado.${f.aprovado ? ` Texto aprovado: <q>${f.aprovado}</q>` : ""}</div>`);
+    } else {
+      const tr = document.createElement("div"); tr.className = "trilho";
+      f.opcoes.forEach((o) => tr.appendChild(cartao(f, o)));
+      box.appendChild(tr);
+    }
+    tl.appendChild(box);
+  });
+  marcarAtual();
+}
+
+function cartao(f, o) {
+  const d = dop(f.id, o.id), el = document.createElement("div");
+  el.className = "card" + (d.estado ? " " + d.estado : ""); el.dataset.f = f.id; el.dataset.o = o.id;
+  const est = d.estado === "fica" ? "✔ FICA" : d.estado === "sai" ? "✕ SAI" : "○ A DECIDIR";
+  el.innerHTML = `<img src="/${o.miniatura}" alt="">
+    <div class="t">${o.rotulo}</div><div class="d">${fmt(o.ini)} → ${fmt(o.fim)} · ${(o.fim - o.ini).toFixed(1)} s${o.nota ? " · ⚠" : ""}</div>
+    <div class="estado ${d.estado || "nada"}">${est}</div>
+    <div class="acoes"><button class="btn fica ${d.estado === "fica" ? "on" : ""}" data-a="fica">✔ Fica</button>
+      <button class="btn sai ${d.estado === "sai" ? "on" : ""}" data-a="sai">✕ Sai</button></div>
+    <textarea placeholder="Ajuste (ex.: cortar 0,3 s antes; legenda; outro look…)">${d.ajuste || ""}</textarea>`;
+  el.onclick = (e) => { if (!["BUTTON", "TEXTAREA"].includes(e.target.tagName)) selecionar(f.id, o.id, true); };
+  el.querySelectorAll(".acoes .btn").forEach((b) => b.onclick = () => marcar(f.id, o.id, b.dataset.a));
+  const ta = el.querySelector("textarea");
+  ta.onfocus = () => selecionar(f.id, o.id, false);
+  ta.oninput = () => { dop(f.id, o.id).ajuste = ta.value; agendarSalvar(); };
+  ta.onchange = () => desenharResumo();
+  return el;
+}
+
+function desenharResumo() { const t = document.activeElement; desenhar(); if (t && t.tagName === "TEXTAREA" && t.id !== "notas") {} }
+
+function marcar(fid, oid, estado) {
+  const d = dop(fid, oid); d.estado = d.estado === estado ? "" : estado;
+  agendarSalvar(); desenhar();
+}
+
+function selecionar(fid, oid, tocar) {
+  const f = vid.faixas.find((x) => x.id === fid), o = f.opcoes.find((x) => x.id === oid);
+  atual = { f, o };
+  if (!player.src.endsWith("/" + o.arquivo)) player.src = "/" + o.arquivo;
+  const ir = () => { player.currentTime = o.ini; if (tocar) player.play(); };
+  if (player.readyState >= 1) ir(); else player.addEventListener("loadedmetadata", ir, { once: true });
+  $("#info").innerHTML = `<span class="rot">${f.nome}</span><h2>${o.rotulo}</h2>
+    <div class="fala"><b class="rot">Falado</b>${o.falado || "—"}</div>
+    ${o.aprovado ? `<div class="fala"><b class="rot">Texto aprovado</b>${o.aprovado}</div>` : ""}
+    ${o.nota ? `<div class="nota">⚠ ${o.nota}</div>` : ""}`;
+  marcarAtual();
+}
+
+function marcarAtual() {
+  document.querySelectorAll(".card").forEach((c) => c.classList.toggle("atual", atual && c.dataset.f === atual.f.id && c.dataset.o === atual.o.id));
+}
+
+player.addEventListener("timeupdate", () => {
+  if (!atual) return;
+  if (player.currentTime >= atual.o.fim) {
+    if ($("#loop").getAttribute("aria-pressed") === "true") player.currentTime = atual.o.ini; else player.pause();
+  }
+});
+$("#tocar").onclick = () => { if (!atual) return; if (player.paused) { if (player.currentTime >= atual.o.fim - 0.05 || player.currentTime < atual.o.ini) player.currentTime = atual.o.ini; player.play(); } else player.pause(); };
+$("#loop").onclick = (e) => { const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.classList.toggle("on", on); };
+$("#som").onclick = (e) => { player.muted = !player.muted; e.currentTarget.textContent = player.muted ? "🔇 Mudo" : "🔊 Som"; };
+$("#notas").oninput = (e) => { dv().notas = e.target.value; agendarSalvar(); };
+
+function agendarSalvar() {
+  $("#salvo").textContent = "salvando…"; clearTimeout(salvarTimer);
+  salvarTimer = setTimeout(async () => {
+    try {
+      const r = await fetch("/api/decisoes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(decisoes) });
+      const ok = (await r.json()).ok;
+      $("#salvo").textContent = ok ? "✔ salvo " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "✕ erro ao salvar";
+    } catch (e) { $("#salvo").textContent = "✕ servidor fora do ar"; }
+  }, 500);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (["TEXTAREA", "INPUT"].includes(document.activeElement.tagName) || !atual) return;
+  const faixas = vid.faixas.filter((f) => f.opcoes.length), fi = faixas.indexOf(atual.f), oi = atual.f.opcoes.indexOf(atual.o);
+  if (e.key === " ") { e.preventDefault(); $("#tocar").click(); }
+  else if (e.key === "f" || e.key === "F") marcar(atual.f.id, atual.o.id, "fica");
+  else if (e.key === "s" || e.key === "S") marcar(atual.f.id, atual.o.id, "sai");
+  else if (e.key === "ArrowRight" && oi < atual.f.opcoes.length - 1) selecionar(atual.f.id, atual.f.opcoes[oi + 1].id, true);
+  else if (e.key === "ArrowLeft" && oi > 0) selecionar(atual.f.id, atual.f.opcoes[oi - 1].id, true);
+  else if (e.key === "ArrowDown" && fi < faixas.length - 1) { e.preventDefault(); selecionar(faixas[fi + 1].id, faixas[fi + 1].opcoes[0].id, true); }
+  else if (e.key === "ArrowUp" && fi > 0) { e.preventDefault(); selecionar(faixas[fi - 1].id, faixas[fi - 1].opcoes[0].id, true); }
+  else return;
+  document.querySelector(".card.atual")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+});
+
+carregar();
+</script>
+</body>
+</html>

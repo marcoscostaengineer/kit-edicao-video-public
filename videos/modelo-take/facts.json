@@ -1,0 +1,8 @@
+{
+  "_como_usar": "Copie para vXXXX/take/facts.json. Uma entrada por frase que aparece na tela (caixa, legenda destacada, cartão). 'origem' é 'fala' (a Brenda disse na gravação; cite o segundo) ou 'manual' (cite o arquivo). Sem origem, a frase não entra. Proibido: depoimento, promessa de resultado, preço, superlativo.",
+  "frases": [
+    {"texto": "<frase exata da tela>", "onde": "caixa", "origem": "fala", "fonte": "gravação 0:03"},
+    {"texto": "<frase exata da tela>", "onde": "legenda", "origem": "manual", "fonte": "manual/01-negocio-e-oferta.md"},
+    {"texto": "Dra. Brenda Rodrigues · CRO-DF 13071", "onde": "cartao", "origem": "manual", "fonte": "manual/01-negocio-e-oferta.md"}
+  ]
+}

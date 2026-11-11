@@ -1,0 +1,11 @@
+{
+ "_nota": "R13 é animação: a Brenda em tela cheia só na abertura (capa). Do 'No começo' (7,2 s) em diante é ilustração planejada no storyboard (roteiro.md), fora das regras de olhos/tamanho; capa, abertura e áudio continuam valendo.",
+ "beats": [
+  {
+   "type": "broll",
+   "planejado": true,
+   "at": 7.2,
+   "to": "end"
+  }
+ ]
+}
